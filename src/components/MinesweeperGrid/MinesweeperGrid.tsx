@@ -2,8 +2,13 @@ import styles from "./minesweeperGrid.module.scss";
 
 type GridProps = {
     grid: Array<number[] | string[]>;
-    showGrid: Array<boolean[]>;
-    updateGrid: (i: number, j: number) => void;
+    showGrid: Array<string[]>;
+    updateGrid: (
+        i: number,
+        j: number,
+        recursive: boolean,
+        click?: string
+    ) => void;
 };
 
 const MinesweeperGrid = ({ grid, showGrid, updateGrid }: GridProps) => {
@@ -27,7 +32,7 @@ const MinesweeperGrid = ({ grid, showGrid, updateGrid }: GridProps) => {
                                     : row === 6
                                     ? "text-brown-600"
                                     : row === 0
-                                    ? "text-gray-200"
+                                    ? "text-blue-500"
                                     : row === "x"
                                     ? "text-black"
                                     : "text-white";
@@ -35,17 +40,24 @@ const MinesweeperGrid = ({ grid, showGrid, updateGrid }: GridProps) => {
                                 <div
                                     key={j}
                                     className={`${styles.row} ${
-                                        showGrid[i][j] === false
+                                        showGrid[i][j] === "hide"
                                             ? "bg-white"
+                                            : showGrid[i][j] === "flag"
+                                            ? "bg-red-100"
                                             : "bg-gray-200"
                                     } border border-blue-300`}
-                                    onClick={() => updateGrid(i, j)}
+                                    onClick={() =>
+                                        updateGrid(i, j, false, "left")
+                                    }
+                                    onContextMenu={() =>
+                                        updateGrid(i, j, false, "right")
+                                    }
                                 >
                                     <p
                                         className={`${
-                                            showGrid[i][j] === true
+                                            showGrid[i][j] === "show"
                                                 ? color
-                                                : "text-white"
+                                                : "hidden"
                                         } font-bold`}
                                     >
                                         {row}
