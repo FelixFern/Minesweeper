@@ -57,7 +57,7 @@ const MinesweeperGrid = ({ grid, showGrid, updateGrid }: GridProps) => {
                                         className={`${
                                             showGrid[i][j] === "show"
                                                 ? color
-                                                : "hidden"
+                                                : ""
                                         } font-bold`}
                                     >
                                         {row}

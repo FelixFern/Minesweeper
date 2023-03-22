@@ -7,7 +7,7 @@ const App = () => {
     const [showedGrid, setShowedGrid] = useState<Array<string[]>>([]);
     const [difficulty, setDifficulty] = useState<number>(0);
     const [started, setStarted] = useState<boolean>(false);
-    const [bombLocation, setBombLocation] = useState<Array<number[]>>([]);
+    const [revealedGrid, setRevealedGrid] = useState<number>(0);
 
     const gridSize = difficulty === 0 ? 16 : difficulty === 1 ? 20 : 24;
     const numberOfBomb = difficulty === 0 ? 24 : difficulty === 1 ? 48 : 64;
@@ -33,7 +33,7 @@ const App = () => {
                 x = Math.floor(Math.random() * gridSize);
                 y = Math.floor(Math.random() * gridSize);
             }
-            setBombLocation((bomb) => [...bomb, [y, x]]);
+
             tempGrid[y][x] = "x";
 
             for (let j = -1; j < 2; j++) {
@@ -71,13 +71,16 @@ const App = () => {
         ];
 
         if (click === "right") {
-            console.log("right clicked");
             temp[row_index][col_index] =
-                temp[row_index][col_index] === "flag" ? "hide" : "flag";
+                temp[row_index][col_index] === "flag"
+                    ? "hide"
+                    : temp[row_index][col_index] === "hide"
+                    ? "flag"
+                    : "show";
             setShowedGrid(() => [...temp]);
-            console.log(showedGrid);
             return;
         }
+        setRevealedGrid(() => revealedGrid + 1);
 
         if (
             grid[row_index][col_index] === 0 &&
@@ -90,13 +93,13 @@ const App = () => {
                     Math.max(0, Math.min(gridSize - 1, col_index + step[1])),
                     true
                 );
-                // setShowedGrid(() => [...temp]);
             });
         }
         if (recursive === false) {
             temp[row_index][col_index] = "show";
             if (grid[row_index][col_index] === "x") {
                 alert("You Lose");
+                setRevealedGrid(0);
                 generateGrid();
                 return;
             }
@@ -109,17 +112,23 @@ const App = () => {
         setShowedGrid(() => [...temp]);
     };
 
-    const checkWin = () => {};
-
     useEffect(() => {
         generateGrid();
     }, [started]);
 
     useEffect(() => {
+        console.log("Revealed ", revealedGrid);
+        console.log(gridSize * gridSize - numberOfBomb);
+        if (revealedGrid === gridSize * gridSize - numberOfBomb) {
+            alert("You Win!");
+        }
+    }, [revealedGrid]);
+
+    useEffect(() => {
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
         });
-    });
+    }, []);
 
     return (
         <main className="w-screen h-screen py-10 bg-blue-100">
